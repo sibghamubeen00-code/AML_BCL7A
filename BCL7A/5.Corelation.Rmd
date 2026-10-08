@@ -1,0 +1,91 @@
+---
+title: "Corelation"
+output: html_document
+---
+
+```{r}
+#Testing negative association between BCL7A promoter methylation and BCL7A expression.
+#when beta value changes, does expression do also?
+
+
+# we calculate Pearson correlation coefficient (r) for each CpG.
+#r < 0 → negative association
+#r > 0 → positive association
+#r ≈ 0 → little/no linear association
+#r = -1 → perfect negative linear relationship
+#r = +1 → perfect positive linear relationship
+```
+
+```{r}
+#create an empty table named "corelation results" with 21 rows, one for each CpG:
+#CpG → stores the CpG name
+#correlation → will store Pearson's r
+#p_value → will store the p-value
+
+
+correlation_results <- data.frame(
+  CpG = colnames(beta_matrix_),
+  correlation = NA, #NA simply means "nothing is entered here yet."
+  p_value = NA
+)
+
+head(correlation_results)
+```
+
+```{r}
+#calculate the Pearson correlation and p-value for all 21 CpGs.
+
+
+for (i in 1:nrow(correlation_results)) {  #Go through the rows of table one at a time, 1 to 21.
+  
+test_result <- cor.test(    #Take result of cor.test (it contains alot of things like: correlation coefficient, p-value, confidence interval, t statistic, degrees of freedom) and temporarly store in an object called "test_result", later 'll add in already created table "correlation_results"
+    
+  combined_data$BCL7A_expression,                   #Take the BCL7A_expression column from combined_data.
+  combined_data[[correlation_results$CpG[i]]],      #Find the current CpG name from correlation_results, then use that name to select the                                                                 corresponding methylation column from combined_data.
+    method = "pearson"
+  )
+  
+  correlation_results$correlation[i] <- test_result$estimate     #extract estimate value from test results and add it into correlation column in                                                                        correlation results data frame
+  correlation_results$p_value[i] <- test_result$p.value          #do same for p value
+}
+
+
+correlation_results
+
+#FDR (False Discovery Rate) correction to r OR corelation value
+correlation_results$FDR <- p.adjust(
+  correlation_results$p_value,  # Take all p-values from the correlation tests.
+  method = "BH"                 # Apply Benjamini-Hochberg FDR correction.
+)
+
+
+correlation_results
+```
+
+```{r}
+#extract -ve correlation cpgs & rank all negative correlations to get stronger candidates:
+
+negative_CpGs <- correlation_results[
+  correlation_results$correlation < 0, # less than 0
+]
+
+negative_CpGs <- negative_CpGs[
+  order(negative_CpGs$correlation), # More negative correlation comes first.
+]
+
+negative_CpGs
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+

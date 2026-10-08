@@ -1,0 +1,104 @@
+---
+title: "DNA.methylation"
+output: html_document
+---
+
+
+
+```{r setup}
+
+setwd("~/Documents/AML_BCL7A/LAML.HumanMethylation450.Level_3")
+
+getwd()
+
+methylation_files <- list.files(
+ "~/Documents/AML_BCL7A/LAML.HumanMethylation450.Level_3",
+   pattern = "TCGA-.*\\.txt$", 
+   recursive = TRUE,
+   full.names = TRUE )
+
+length(methylation_files)
+head(methylation_files)
+```
+
+```{r}
+# Extract patient-level TCGA IDs from methylation file names
+# before: TCGA-AB-2803-03A-01D-0741-05.txt
+# becomes: TCGA-AB-2803
+methylation_patient_ids <- sub(
+  ".*(TCGA-[A-Z0-9]+-[A-Z0-9]+)-.*",
+  "\\1",
+  methylation_files
+)
+
+# Check
+length(methylation_patient_ids)
+head(methylation_patient_ids)
+```
+
+
+```{r}
+#now we'll open 1 methylation file, find BCL7A cpgs and then will see only those cpg in all matched files (common RNA,DNA files)
+
+read_methylationfile <- methylation_files[1]
+
+methylation_file1 <- read.delim(
+  read_methylationfile,
+  skip = 1
+)
+
+#give me only BCL7A rows from a big data frame "methylation_file1"
+  methylation_file1[
+  methylation_file1$Gene_Symbol == "BCL7A",
+]
+
+#count,how many rows containing BCL7A in 1st meth file
+sum(
+  methylation_file1$Gene_Symbol == "BCL7A",
+  na.rm = TRUE
+)
+
+#save them as a separate table:
+BCL7A_methylation <- methylation_file1[
+  methylation_file1$Gene_Symbol == "BCL7A",
+]
+
+View(BCL7A_methylation)
+BCL7A_methylation
+```
+
+
+```{r}
+
+#BCL7A locus is (122,459,790 - 122,499,950) so, ±400 bp will be
+#Start: 122,459,790 − 400 = 122,459,390   AND    End: 122,499,950 + 400 = 122,500,350
+bcl7a_region <- BCL7A_methylation[
+  BCL7A_methylation$Genomic_Coordinate >= 122459390 & 
+  BCL7A_methylation$Genomic_Coordinate <= 122500350,
+]
+
+bcl7a_region
+
+#   IMPORTANT  #
+#interval used in paper is specific promoter/proximal region discussed for the experimental bisulfite sequencing work, unlike we used.
+
+```
+
+```{r}
+#Now we have all cols of bcl7a_region, But we will capture only cgs and find them in all files and then later combine their relating all cols,
+
+
+candidate_probes <- bcl7a_region$Composite.Element.REF[
+  !is.na(bcl7a_region$Composite.Element.REF) #remove NA values
+]
+
+candidate_probes
+
+length(candidate_probes)
+
+any(is.na(candidate_probes))
+
+anyDuplicated(candidate_probes)
+```
+
+

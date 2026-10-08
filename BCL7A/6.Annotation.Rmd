@@ -1,0 +1,88 @@
+---
+title: "genomic coordination"
+output: html_document
+---
+
+
+```{r}
+# Find the single most inversely correlated CpG
+best_CpG <- correlation_results[
+  which.min(correlation_results$correlation),
+]
+
+best_CpG
+```
+
+
+```{r}
+                      #IMPORTANT
+#We are doing this just to report exact chr and genomic position of end cpg.. this slide has no other function in code, its just for loci check
+
+#so we could say "Among the CpGs that passed our BCL7A ±400 bp filtering and showed negative correlations, this is located at these exact genomic positions.”
+```
+
+
+
+```{r}
+
+#according to FDR value only "cg27193813" is the strongest one, having 0.02 FDR (p-value after error correction) less than 0.05 OR < 0.05
+
+best_CpG <- methylation_file1[
+  methylation_file1$Composite.Element.REF == "cg27193813",
+]
+
+best_CpG[
+  ,
+  c(
+    "Composite.Element.REF",
+    "Gene_Symbol",
+    "Chromosome",
+    "Genomic_Coordinate"
+  )
+]
+
+best_CpG
+```
+
+
+```{r}
+
+#It is inside BCL7A whole-locus ±400 bp interval
+
+
+#BCL7A:       122459790 ───────────────── 122499950
+#±400 bp:     122459390 ───────────────── 122500350
+#                                      ↑
+#                             cg27193813-
+#                             122492914
+
+
+```
+
+
+
+```{r}
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

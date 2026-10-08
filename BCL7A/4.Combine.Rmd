@@ -1,0 +1,31 @@
+---
+title: "Combined"
+output: html_document
+---
+
+
+
+
+```{r}
+
+#we created hyphend ID but not added in BCL7A table
+#our previous BCL7A table contains dot formate, so we will replace dotted one with hyphened RNA IDs before merging both datasets
+
+
+BCL7A_table$TCGA_ID <- hyphened_RNA_IDs
+head(BCL7A_table)
+
+
+combined_data <- merge( #merge function check $TCGA IDs on both datasets and find commons and give new data containing only intersecting ones
+  BCL7A_table,
+  methylation_table,
+  by = "TCGA_ID"  #intersecting by TCGA-ID names
+)
+
+dim(combined_data)
+View(combined_data)
+
+colnames(combined_data)
+
+```
+

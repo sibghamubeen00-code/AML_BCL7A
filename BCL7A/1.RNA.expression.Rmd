@@ -1,0 +1,107 @@
+---
+title: "trial"
+output: html_document
+---
+
+
+```{r setup}
+knitr::opts_knit$set(
+  root.dir = "~/Documents/AML_BCL7A"
+)
+```
+
+
+```{r}
+getwd()
+
+dir.create("data")
+dir.create("results")
+dir.create("figures")
+
+setwd("~/Documents/AML_BCL7A/LAML.HumanMethylation450.Level_3")
+list.files()
+
+#Load and inspect data===
+rna_file <- "laml.rnaseq.179_v1.0_gaf2.0_rpkm_matrix.txt.tcgaID.txt"
+
+file.exists(rna_file)
+
+rna <- read.delim(
+  rna_file
+)
+dim(rna)
+head(rna)
+
+#column names
+colnames(rna)[1:10]
+
+# Count the RNA samples
+length(colnames(rna)) - 1
+
+#1st sample ID
+colnames(rna)[2]
+
+#grep() is for finding matching texts
+
+grep(
+  "BCL7A",
+  rna$GeneID, #genes from whole rna geneID column
+ignore.case = TRUE, #find this gene in any caplicat or small cases; bcl7A, BCl7a etc
+  value = TRUE
+)
+```
+
+
+```{r}
+#we found this gene on 1569 location, locate this position in all 179 samples at 1569 position
+rna[1569, ]
+```
+
+
+```{r}
+# remove BCL7A|605_calculated column, as we won't calculate it
+row_BCL7A <- rna[1569, -1]
+row_BCL7A
+```
+
+```{r}
+#all patients TCGA IDs are 179 columns at this point, make them one column
+TCGA_ID_column <- colnames(row_BCL7A)
+TCGA_ID_column
+```
+
+
+```{r}
+#Convert BCL7A expression values into a numeric vector (1 column from 179 columns)
+BCL7A_expression_column <- as.numeric(row_BCL7A)
+BCL7A_expression_column 
+
+```
+
+
+
+```{r}
+#before it was 1 row table with 179 coulmns, each col having TCGA name and its expression value
+
+#now we have 2 seprate vectors: one seprate column of rna expression value and 1 seprate column is TCGA_IDs
+
+# (add these 2 col vectors into one table) Create a 2-column table
+BCL7A_table <- data.frame(
+  TCGA_ID = TCGA_ID_column,
+  BCL7A_expression = BCL7A_expression_column
+)
+
+# View the table
+BCL7A_table
+
+```
+
+
+
+
+
+
+
+
+
+

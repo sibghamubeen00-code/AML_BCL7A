@@ -1,0 +1,64 @@
+---
+title: "visualization"
+output: html_document
+---
+
+```{r}
+#visualizing the strongest negative correlation.
+
+#our previous full complete table cointaing TCGA-ID, 21 cpgs's beta value and expression etc will use for visualization
+
+combined_data
+
+```
+
+
+
+
+
+
+```{r}
+#we find 1 cgs, not 1 patients, we have 176 pateints to check that 1 cgs
+#plot for 1 cg
+
+
+png( #save png
+  "figures/BCL7A_cg27193813_methylation_expression.png",
+  width = 1800,
+  height = 1400,
+  res = 300
+)
+
+fit1 <- lm( #linear regression model
+  BCL7A_expression ~ cg27193813,
+  data = combined_data
+) 
+
+plot(
+  combined_data$cg27193813,
+  combined_data$BCL7A_expression,
+  pch = 16,
+  xlab = "BCL7A methylation (cg27193813)",
+  ylab = "BCL7A expression",
+  main = "BCL7A methylation vs BCL7A expression"
+)
+
+abline(
+  fit1,
+  lty = 3,
+  lwd = 2
+)
+
+dev.off() #finish and save
+```
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,151 @@
+---
+title: "Intersect"
+output: html_document
+---
+
+
+
+
+
+```{r}
+#we have extracted methylation file/patients/TCGA IDs from their titles, and have to look which are matched with RNA IDs
+#But problem is, RNA ID names are in dot formate (TCGA.AB.2803) and methylation is hyphened TCGA-AB-2802)
+
+# Convert RNA patient IDs from dot format to hyphen format
+
+hyphened_RNA_IDs <- gsub(  #gsub() is similar to sub(), but it's useful when we want to replace all occurrence's of something in a string.
+
+  "\\.",       #in R dot mean "any single character" so we used \\ before . to tell R we specifically want "."
+  "-",
+  TCGA_ID_column #object in rna.expression file
+)
+
+head(hyphened_RNA_IDs)
+
+```
+
+
+
+
+```{r}
+# Find patient IDs present in both RNA and methylation datasets
+
+# Find patient IDs present in both RNA and methylation datasets
+
+matched_patient_ids <- intersect(
+  hyphened_RNA_IDs,   #179 RNA patients
+  methylation_patient_ids #194 methylation patients
+) #still not opening methylation files. only comparing patient IDs.
+
+# Number of patients present in both datasets
+length(matched_patient_ids)
+
+# View the first matched patient IDs
+head(matched_patient_ids)
+length(matched_patient_ids)
+```
+
+
+
+```{r}
+
+#we have to capture those cgs from all matched patient id
+
+matched_methylation_files <- methylation_files[
+  methylation_patient_ids %in% matched_patient_ids
+]
+head(matched_methylation_files) 
+```
+
+
+
+```{r}
+#function giving a recipe, mean if later i will give you a data then do this this and this and eventually give me results.
+
+
+candidate_cgs <- function(file) {
+  
+  # Read one methylation file
+  methylation_file <- read.delim(
+    file,
+    skip = 1
+  )
+  
+#Keep our 22 candidate probes and their Beta_values from all files one by one. (IMPORTANT: we used "candidate probes" for cg we extract from 1 file and later capture those probes from all files and named "candidate probe")
+  
+  candidate_probe <- methylation_file[
+  methylation_file$Composite.Element.REF %in% candidate_probes,
+  c("Composite.Element.REF", "Beta_value")
+]
+  
+  return(candidate_probe)
+
+}
+
+```
+
+```{r}
+#apply "candidate_cgs" function recpie on all matched methylation files
+
+all_candidate_data <- lapply(
+  matched_methylation_files,
+  candidate_cgs
+)
+View(all_candidate_data)
+all_candidate_data
+```
+
+
+```{r}
+# Stack beta values from all 176 data frames
+# Patient IDs are NOT added yet
+
+beta_matrix <- do.call(
+  rbind, #bind row by row
+  lapply(all_candidate_data, function(x) x$Beta_value) #apply this for beta values dont stack cgs
+)
+
+beta_matrix
+#here we have col names of beta values 1,2,3... not cgs
+
+
+#attach candidate extracted cgs 
+colnames(beta_matrix) <- candidate_probes
+colnames(beta_matrix)
+
+#check if there any NA beta values?
+colSums(is.na(beta_matrix))
+
+# Keep only beta-value columns that have NO NA values
+beta_matrix_ <- beta_matrix[
+  ,
+  colSums(is.na(beta_matrix)) == 0,
+  drop = FALSE
+]
+
+# Check the cleaned beta matrix
+beta_matrix_
+dim(beta_matrix_)
+
+```
+
+
+```{r}
+
+# Create the complete methylation table
+methylation_table <- data.frame(
+  TCGA_ID = matched_patient_ids, #use matched ids not all etc #we remove 1 cg means 1 col not row
+  beta_matrix_,
+  check.names = FALSE
+)
+View(methylation_table)
+dim(methylation_table)
+```
+
+
+
+
+
+
+
+
