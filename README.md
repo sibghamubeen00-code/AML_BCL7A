@@ -22,7 +22,8 @@ Does DNA methylation at CpG sites within ±400 bp of the BCL7A genomic region sh
 
 ## Genomic Context
 
-The BCL7A region was inspected using the UCSC Genome Browser, including H3K4me1, H3K27ac, and DNase cluster tracks. These tracks provide genomic context but do not establish that methylation causes changes in BCL7A expression.
+The BCL7A region was inspected using the UCSC Genome Browser, including H3K4me1, H3K27ac, and DNase cluster tracks. The CpG site cg27193813 (chr12:122,492,914) is located within intron 5 of BCL7A transcript NM_001024808.3. The H3K4me1 and H3K27ac signal tracks appear as thin lines that overlap the baseline, with no prominent peaks visible in the inspected region. These tracks provide genomic context but do not establish that methylation causes changes in BCL7A expression.
+
 
 ![UCSC genomic region](BCL7A/figures/USCS%20genomic%20region.png)
 
