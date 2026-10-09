@@ -1,97 +1,82 @@
 
+# Set the repository location
+project_path <- path.expand("~/Documents/AML_BCL7A")
 
-project_path <- "~/Documents/AML_BCL7A"
-dir.exists(project_path)
-
-readme_text <- "
-# Reproduction of BCL7A Methylation–Expression Association in TCGA-LAML
-
-## Overview
-
-This project independently reproduces the TCGA-LAML methylation–expression analysis reported by Patiño-Mercau et al. (2023) *BCL7A is silenced by hypermethylation to promote acute myeloid leukemia*, PMID: 36941700 using R/RStudio.
-
-## Research Question
-
-Does DNA methylation at CpG sites within ±400 bp of the BCL7A genomic region show an inverse relationship with BCL7A expression in TCGA-LAML?
-
-## Key Findings & Main Result
-
-- **176 matched TCGA-LAML patients** were successfully integrated across DNA methylation and RNA expression datasets.
-- Out of 22 initial BCL7A-associated CpGs, **21 CpGs** were evaluated (cg20260559 was excluded due to missing data).
-- **cg27193813** showed the strongest inverse association with BCL7A expression:
-  - **Pearson correlation:** r = -0.2425
-  - **P-value:** p = 0.00118
-  - **BH-adjusted FDR:** 0.02485
-  - **Genomic coordinate:** chr12:122,492,914
-
-![BCL7A methylation-expression correlation](figures/BCL7A_cg27193813_methylation_expression.png)
-
-## Genomic Context
-
-The BCL7A region was inspected using the UCSC Genome Browser, incorporating regulatory chromatin tracks (**H3K4me1**,**H3K27ac**  and **DNase cluster**) to provide epigenetic context.
-
-![UCSC genomic region](figures/USCS%20genomic%20region.png)
-
-## Limitations
-
-- **Scope:** Focuses specifically on reproducing the TCGA-LAML methylation–expression analysis rather than the full experimental scope of the original publication.
-- **Sample Cohort:** Used 176 matched patients compared to 160 in the original study, which may account for analytical minor variations.
-- **Causality:** Demonstrates a statistical association between methylation and expression, which does not establish direct functional causality.
-
-## Reproducibility
-
-The repository contains the R analysis workflow, processed result tables, and generated figures. Raw TCGA data are omitted.
-
-## Project Purpose
-
-Developed as an independent computational exercise to practice:
-- Cancer genomics & epigenetics
-- DNA methylation and RNA expression integration
-- Patient matching, correlation analysis, and BH-FDR correction
-- Genomic visualization and reproducible workflows in R
-
-## Author
-
-**Sibgha Mubeen**
-"
-
-readme_file <- file.path(project_path, "README.md")
-
-writeLines(readme_text, readme_file)
-
-file.exists(readme_file)
-
-readme_text <- sub(
+# Create README.md content
+readme_text <- c(
+  "# Reproduction of BCL7A Methylation–Expression Association in TCGA-LAML",
+  "",
+  "## Overview",
+  "",
+  "This project independently reproduces the TCGA-LAML methylation–expression analysis reported by Patiño-Mercau et al. (2023), *BCL7A is silenced by hypermethylation to promote acute myeloid leukemia* (PMID: 36941700), using R/RStudio.",
+  "",
+  "## Research Question",
+  "",
+  "Does DNA methylation at CpG sites within ±400 bp of the BCL7A genomic region show an inverse relationship with BCL7A expression in TCGA-LAML?",
+  "",
+  "## Key Findings",
+  "",
+  "- **176 matched TCGA-LAML patients** were integrated across DNA methylation and RNA expression datasets.",
+  "- Of 22 initially identified BCL7A-associated CpGs, **21 were evaluated** after excluding cg20260559 because of missing data.",
+  "- **cg27193813** showed the strongest inverse association with BCL7A expression:",
+  "  - Pearson correlation: **r = -0.2425**",
+  "  - P-value: **p = 0.00118**",
+  "  - BH-adjusted FDR: **0.02485**",
+  "  - Genomic coordinate: **chr12:122,492,914**",
+  "",
+  "![BCL7A methylation-expression correlation](BCL7A/figures/BCL7A_cg27193813_methylation_expression.png)",
+  "",
+  "## Genomic Context",
+  "",
+  "The BCL7A region was inspected using the UCSC Genome Browser, including H3K4me1, H3K27ac, and DNase cluster tracks. These tracks provide genomic context but do not establish that methylation causes changes in BCL7A expression.",
+  "",
+  "![UCSC genomic region](BCL7A/figures/USCS%20genomic%20region.png)",
+  "",
+  "## Limitations",
+  "",
+  "- This project reproduces the TCGA-LAML methylation–expression analysis, not every experiment in the original publication.",
+  "- The analysis used 176 matched patients, compared with 160 in the original study.",
+  "- The observed association does not establish causality.",
+  "",
+  "## Reproducibility",
+  "",
+  "The repository contains the R analysis workflow, processed result tables, and generated figures. Raw TCGA data are not included.",
+  "",
+  "## Repository Structure",
+  "",
+  "```text",
+  "AML_BCL7A/",
+  "├── BCL7A/",
+  "│   ├── 1.RNA.expression.Rmd",
+  "│   ├── 2.DNA.methylation.Rmd",
+  "│   ├── 3.matched IDs.Rmd",
+  "│   ├── 4.Combine.Rmd",
+  "│   ├── 5.Corelation.Rmd",
+  "│   ├── 6.Annotation.Rmd",
+  "│   ├── 7.visualization.Rmd",
+  "│   ├── figures/",
+  "│   ├── results/",
+  "│   └── Readme.R",
+  "├── README.md",
+  "└── .gitignore",
+  "```",
+  "",
+  "## Project Purpose",
+  "",
+  "This independent computational project was developed to practice cancer genomics, DNA methylation and RNA expression integration, patient matching, correlation analysis, multiple-testing correction, genomic visualization, and reproducible analysis in R.",
+  "",
   "## Reference",
-  paste0(
-    "## Repository Structure\n\n",
-    "```text\n",
-    "AML_BCL7A/\n",
-    "├── BCL7A/\n",
-    "│   ├── 1.RNA.expression.Rmd\n",
-    "│   ├── 2.DNA.methylation.Rmd\n",
-    "│   ├── 3.matched IDs.Rmd\n",
-    "│   ├── 4.Combine.Rmd\n",
-    "│   ├── 5.Corelation.Rmd\n",
-    "│   ├── 6.Annotation.Rmd\n",
-    "│   ├── 7.visualization.Rmd\n",
-    "│   ├── figures/\n",
-    "│   ├── results/\n",
-    "│   └── Readme.R\n",
-    "├── LAML.HumanMethylation450.Level_3/\n",
-    "```\n\n",
-    "## Reference"
-  ),
-  readme_text
+  "",
+  "Patiño-Mercau, S., et al. (2023). *BCL7A is silenced by hypermethylation to promote acute myeloid leukemia*. PMID: 36941700.",
+  "",
+  "## Author",
+  "",
+  "**Sibgha Mubeen**"
 )
+
+# Write README.md to the repository root
+readme_file <- file.path(project_path, "README.md")
 writeLines(readme_text, readme_file)
-grep("Repository Structure", readLines(readme_file), value = TRUE)
 
-
-
-
-
-
-
-
-
+# Verify the file was created
+file.exists(readme_file)
